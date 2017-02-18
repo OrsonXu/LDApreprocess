@@ -3,8 +3,8 @@
 
 from nltk.tokenize import RegexpTokenizer
 from nltk.stem import WordNetLemmatizer
-import cld2full
 from bs4 import BeautifulSoup
+from langdetect import detect
 import re
 
 en_stop = [
@@ -63,12 +63,7 @@ def lemmatize(text):
     return t
 
 def judge_language(text, lang):
-    detector = cld2full.detect
-    isReliable, textBytesFound, details = detector(line, isPlainText=True)
-    detectedLangName = ""
-    detectedLangeCode = ""
-    if(len(details) > 0):
-           detectedLangName, detectedLangeCode = details[0][:2]
+    detectedLangName = detect(text)
     if (detectedLangName == lang):
         return True
     else:
