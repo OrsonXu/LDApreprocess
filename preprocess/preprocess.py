@@ -29,54 +29,68 @@ en_stop = [
 "&amp", "amp;", "&amp;", "&gt", "gt;", "&gt;"
 ]
 
+def open_without_final_line(path_to_file, method = "plaintext"):
+    content = []
+    if (method == "plaintext"):
+        with open(path_to_file, "r") as f:
+            for item in f:
+                content.append(item[:-1])
+    elif (method == "pickle"):
+        import pickle
+        with open(path_to_file, "rb") as f:
+            content = pickle.load(f)    
+    return content
+
 def to_lower(text):
-	# just to remind
-	return text.lower()
+    # just to remind
+    return text.lower()
 
 def remove_stop_words(text):
-	tokenizer = RegexpTokenizer(r"\w+")
-	tokens = tokenizer.tokenize(text)
-  	stopped_tokens = tokens
-  	# you can add any further code here
-  	stopped_tokens = [i for i in stopped_tokens if not i in en_stop]
-  	t = ' '.join(stopped_tokens)
-	return t
+    tokenizer = RegexpTokenizer(r"\w+")
+    tokens = tokenizer.tokenize(text)
+    stopped_tokens = tokens
+      # you can add any further code here
+    stopped_tokens = [i for i in stopped_tokens if not i in en_stop]
+    t = ' '.join(stopped_tokens)
+    return t
 
 def lemmatize(text):
-	tokenizer = RegexpTokenizer(r"\w+")
-	lemmatizer = WordNetLemmatizer()
-	tokens = tokenizer.tokenize(text)
-	tokens = [lemmatizer.lemmatize(i, "v") for i in tokens]
-	t = ' '.join(tokens)
-	return t
+    tokenizer = RegexpTokenizer(r"\w+")
+    lemmatizer = WordNetLemmatizer()
+    tokens = tokenizer.tokenize(text)
+    tokens = [lemmatizer.lemmatize(i, "v") for i in tokens]
+    t = ' '.join(tokens)
+    return t
 
 def judge_language(text, lang):
-	detector = cld2full.detect
-	isReliable, textBytesFound, details = detector(line, isPlainText=True)
-    if len(details) > 0:
-    	detectedLangName, detectedLangeCode = details[0][:2]
-    if detectedLangName == lang:
-		return True
-	else:
-		return False
+    detector = cld2full.detect
+    isReliable, textBytesFound, details = detector(line, isPlainText=True)
+    detectedLangName = ""
+    detectedLangeCode = ""
+    if(len(details) > 0):
+           detectedLangName, detectedLangeCode = details[0][:2]
+    if (detectedLangName == lang):
+        return True
+    else:
+        return False
 
 def remove_html_tag(text):
-	soup = BeautifulSoup(text)
-	t = soup.get_text()
-	return t
+    soup = BeautifulSoup(text)
+    t = soup.get_text()
+    return t
 
 def remove_url(text):
-	t = text
-	t = re.sub(r'https?:\/\/[\S]*', ' ', t)
-	return t
+    t = text
+    t = re.sub(r'https?:\/\/[\S]*', ' ', t)
+    return t
 
 def remove_unicode(text):
-	t = text
-  	t = unidecode(unicode(t, encoding = "utf-8"))
-  	t = "".join([i if ord(i) < 128 else ' ' for i in t])
-  	return t
+    t = text
+    t = unidecode(unicode(t, encoding = "utf-8"))
+    t = "".join([i if ord(i) < 128 else ' ' for i in t])
+    return t
 
 def remove_redundant_whitespace(text):
-	t = test.split()
-	t = ' '.join(t)
-	return t
+    t = test.split()
+    t = ' '.join(t)
+    return t
