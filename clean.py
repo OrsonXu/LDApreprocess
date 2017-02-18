@@ -4,7 +4,8 @@ texts = pre.open_without_final_line("path_to_your_text")
 cleaned_texts = []
 for index, text in enumerate(texts):
     print index
-    if not (pre.judge_language(text, "ENGLISH")):
+    # remove none english text in the file
+    if not (pre.judge_language(text, "en")):
         continue
     text = pre.remove_html_tag(text)
     text = pre.remove_url(text)
