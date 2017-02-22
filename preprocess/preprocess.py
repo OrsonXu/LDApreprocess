@@ -1,11 +1,17 @@
 #!/usr/bin/env python
 #coding: utf8 
 
+from nltk.tokenize import WhitespaceTokenizer
 from nltk.tokenize import RegexpTokenizer
 from nltk.stem import WordNetLemmatizer
 from bs4 import BeautifulSoup
 from langdetect import detect
+import unidecode
 import re
+
+tokenizer = WhitespaceTokenizer()
+tokenizer_regex = RegexpTokenizer(r"\w+")
+lemmatizer = WordNetLemmatizer()
 
 en_stop = [
 "!!", "?!", "??", "!?", "`", "``", "''", "-lrb-", "-rrb-", "-lsb-", "-rsb-", ",", ".", ":", ";", "\"", "'",
@@ -46,31 +52,37 @@ def to_lower(text):
     return text.lower()
 
 def remove_stop_words(text):
-    tokenizer = RegexpTokenizer(r"\w+")
-    tokens = tokenizer.tokenize(text)
+    t = text
+    tokens = tokenizer.tokenize(t)
     stopped_tokens = tokens
-      # you can add any further code here
+    # you can add any further code here
+    stopped_tokens = [i for i in stopped_tokens if not i in en_stop]
+    t = ' '.join(stopped_tokens)
+    tokens = tokenizer_regex.tokenize(t)
+    stopped_tokens = tokens
     stopped_tokens = [i for i in stopped_tokens if not i in en_stop]
     t = ' '.join(stopped_tokens)
     return t
 
 def lemmatize(text):
-    tokenizer = RegexpTokenizer(r"\w+")
-    lemmatizer = WordNetLemmatizer()
     tokens = tokenizer.tokenize(text)
     tokens = [lemmatizer.lemmatize(i, "v") for i in tokens]
     t = ' '.join(tokens)
     return t
 
 def judge_language(text, lang):
-    detectedLangName = detect(text)
+    try:
+        detectedLangName = detect(text[:50])
+    except:
+        detectedLangName = ""
     if (detectedLangName == lang):
         return True
     else:
+        print detectedLangName
         return False
 
 def remove_html_tag(text):
-    soup = BeautifulSoup(text)
+    soup = BeautifulSoup(text, "lxml")
     t = soup.get_text()
     return t
 
@@ -81,11 +93,22 @@ def remove_url(text):
 
 def remove_unicode(text):
     t = text
-    t = unidecode(unicode(t, encoding = "utf-8"))
+    # t = unidecode(unicode(t, encoding = "utf-8"))
     t = "".join([i if ord(i) < 128 else ' ' for i in t])
     return t
 
 def remove_redundant_whitespace(text):
-    t = test.split()
+    t = text.split()
     t = ' '.join(t)
+    return t
+def remove_single_alpha(text):
+    t = text.split()
+    rr = re.compile(r"(^.$)")
+    t = [x if not rr.match(x) else '' for x in t]
+    t = ' '.join(t)
+    return t
+def add_dot(text):
+    t = text
+    t = t.replace(r"\r\n", ".")
+    t = t.replace(r"\n", ".")
     return t
